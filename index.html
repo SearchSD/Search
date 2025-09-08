@@ -37,6 +37,127 @@
             line-height: 1.5;
         }
 
+        /* Login screen */
+        .login-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #f8f9fa, #fff);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 20px;
+        }
+
+        .login-card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            width: 100%;
+            max-width: 400px;
+            box-shadow: var(--shadow-hover);
+            text-align: center;
+        }
+
+        .login-logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 1.5rem;
+        }
+
+        .login-logo span:nth-child(1) {
+            color: var(--blue);
+        }
+
+        .login-logo span:nth-child(2) {
+            color: var(--red);
+        }
+
+        .login-logo span:nth-child(3) {
+            color: var(--yellow);
+        }
+
+        .login-logo span:nth-child(4) {
+            color: var(--blue);
+        }
+
+        .login-logo span:nth-child(5) {
+            color: var(--green);
+        }
+
+        .login-logo span:nth-child(6) {
+            color: var(--red);
+        }
+
+        .login-logo span:nth-child(7) {
+            color: var(--blue);
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: var(--muted);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 12px 16px;
+            font-size: 16px;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            outline: none;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            border-color: var(--blue);
+            box-shadow: 0 0 0 2px rgba(66, 133, 244, 0.2);
+        }
+
+        .login-error {
+            color: var(--red);
+            font-size: 14px;
+            margin-top: 8px;
+            display: none;
+        }
+
+        .login-btn {
+            padding: 12px;
+            background: var(--blue);
+            color: white;
+            border: none;
+            border-radius: var(--radius-sm);
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+
+        .login-btn:hover {
+            background: #3367d6;
+        }
+
+        .login-btn:disabled {
+            background: #a8c7fa;
+            cursor: not-allowed;
+        }
+
         /* Landing (Google-like) */
         .landing {
             min-height: 100vh;
@@ -630,6 +751,10 @@
                 padding: 4px 10px;
                 font-size: 13px;
             }
+
+            .login-card {
+                padding: 20px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -664,6 +789,10 @@
             .profile-actions button {
                 padding: 6px 12px;
                 font-size: 13px;
+            }
+
+            .login-card {
+                padding: 16px;
             }
         }
 
@@ -720,8 +849,30 @@
 </head>
 
 <body>
+    <!-- Login Screen -->
+    <div class="login-screen" id="loginScreen">
+        <div class="login-card">
+            <div class="login-logo" aria-label="Student Search">
+                <span>S</span><span>D</span><span>S</span><span>E</span>
+            </div>
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" class="form-input" placeholder="Enter your username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" class="form-input" placeholder="Enter your password" required>
+                </div>
+                <div class="login-error" id="loginError">Invalid username or password</div>
+                <button type="submit" class="login-btn" id="loginBtn">Sign In</button>
+            </form>
+            <div class="hint" id="loginHint">Looking for <code>users.json</code> in this folder…</div>
+        </div>
+    </div>
+
     <!-- Landing -->
-    <section class="landing" id="landing">
+    <section class="landing" id="landing" style="display: none;">
         <div class="landing-inner">
             <div class="logo" aria-label="Student Search">
                 <span>S</span><span>D</span><span>S</span><span>E</span>
@@ -820,7 +971,9 @@
     <script>
         // --- State ---
         let STUDENTS = [];
+        let USERS = [];
         let SOURCE = 'Database.json';
+        let USER_SOURCE = 'users.json';
         let currentPage = 1;
         const RESULTS_PER_PAGE = 10;
         let activeFilters = {
@@ -835,6 +988,13 @@
         let allClasses = new Set();
 
         const $ = (id) => document.getElementById(id);
+        const loginScreen = $('loginScreen');
+        const loginForm = $('loginForm');
+        const usernameInput = $('username');
+        const passwordInput = $('password');
+        const loginError = $('loginError');
+        const loginBtn = $('loginBtn');
+        const loginHint = $('loginHint');
         const landing = $('landing');
         const landingInput = $('landingInput');
         const landingSearchBtn = $('landingSearchBtn');
@@ -1457,7 +1617,72 @@
             localStorage.setItem('savedStudents', JSON.stringify(savedStudents));
         });
 
+        // --- Login Functions ---
+        function validateUser(username, password) {
+            return USERS.some(user => 
+                user.username === username && user.password === password
+            );
+        }
+
+        function showApp() {
+            loginScreen.style.display = 'none';
+            landing.style.display = 'grid';
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value;
+            
+            if (!username || !password) {
+                loginError.textContent = 'Please enter both username and password';
+                loginError.style.display = 'block';
+                return;
+            }
+            
+            if (validateUser(username, password)) {
+                // Store login state in localStorage
+                localStorage.setItem('isLoggedIn', 'true');
+                localStorage.setItem('username', username);
+                
+                showApp();
+            } else {
+                loginError.textContent = 'Invalid username or password';
+                loginError.style.display = 'block';
+            }
+        }
+
+        // Check if user is already logged in
+        function checkLoginStatus() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
+            if (isLoggedIn) {
+                showApp();
+            }
+        }
+
+        // Load users from users.json
+        async function loadUsers() {
+            try {
+                const res = await fetch(USER_SOURCE, { cache: 'no-store' });
+                if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
+                const json = await res.json();
+                USERS = normalizeJSON(json);
+                loginHint.textContent = `Loaded: ${USER_SOURCE} (${USERS.length} users)`;
+            } catch (err) {
+                loginHint.textContent = 'Error loading users.json. Using default credentials.';
+                
+                // Fallback to default user if users.json doesn't exist
+                USERS = [
+                    { username: 'admin', password: 'password' },
+                    { username: 'user', password: '123456' }
+                ];
+            }
+        }
+
         // --- Events ---
+        loginForm.addEventListener('submit', handleLogin);
+
         landingInput.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
                 switchToResults(landingInput.value);
@@ -1571,7 +1796,12 @@
         });
 
         // --- Initial auto-load of database.json (optional) ---
-        (async function autoLoad() {
+        (async function initializeApp() {
+            // First load users and check login status
+            await loadUsers();
+            checkLoginStatus();
+            
+            // Then try to load the database
             try {
                 const res = await fetch(SOURCE, { cache: 'no-store' });
                 if (!res.ok) throw new Error(res.status + ' ' + res.statusText);
