@@ -1,6 +1,12 @@
 {
   "users": [
     {
-      "username": "magician",
-      "password": "magician@sdse.com"
+      "username": "admin",
+      "password": "admin123"
+    },
+    {
+      "username": "user",
+      "password": "password"
     }
+  ]
+}
