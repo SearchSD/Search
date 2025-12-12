@@ -523,6 +523,11 @@
     </div>
 
     <script>
+        // Check authentication
+        if (sessionStorage.getItem('isAuthenticated') !== 'true') {
+            window.location.href = 'index.html';
+        }
+
         // Toast notification function
         function showToast(message) {
             const toast = document.getElementById('toast');
