@@ -205,6 +205,188 @@
             }
         }
 
+        /* Login Styles */
+        .login-container {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 450px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            display: none;
+        }
+
+        .login-container.active {
+            display: block;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .login-logo {
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            animation: glitch 5s infinite;
+        }
+
+        .login-tagline {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-family: 'VT323', monospace;
+            letter-spacing: 2px;
+        }
+
+        .login-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 2px solid var(--glass-border);
+            padding: 40px;
+            animation: borderPulse 3s ease-in-out infinite;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(0, 20, 10, 0.5);
+            border: 2px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 16px;
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-input:focus {
+            background: rgba(0, 255, 65, 0.1);
+            border-color: var(--accent);
+        }
+
+        .login-btn {
+            width: 100%;
+            background: var(--accent);
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #000000;
+            font-family: 'Share Tech Mono', monospace;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .login-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.5);
+            color: #ff0000;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        .credentials-info {
+            background: rgba(0, 255, 65, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 20px;
+        }
+
+        .credentials-info h4 {
+            color: var(--accent);
+            font-size: 12px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+
+        .credentials-info p {
+            color: var(--text-secondary);
+            font-size: 11px;
+            line-height: 1.6;
+        }
+
+        .credentials-info code {
+            background: rgba(0, 0, 0, 0.5);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: var(--accent);
+        }
+
+        /* Logout Button */
+        .logout-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 0, 0, 0.1);
+            border: 2px solid rgba(255, 0, 0, 0.5);
+            color: #ff0000;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: none;
+        }
+
+        .logout-btn.show {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 0, 0, 0.2);
+            transform: scale(1.05);
+        }
+
         /* Main Container */
         .main-container {
             max-width: 1200px;
@@ -212,6 +394,11 @@
             padding: 40px 24px;
             position: relative;
             z-index: 1;
+            display: none;
+        }
+
+        .main-container.active {
+            display: block;
         }
 
         /* Header/Logo */
@@ -536,7 +723,49 @@
 </head>
 
 <body>
-    <div class="main-container">
+    <button class="logout-btn" id="logoutBtn">
+        <span class="material-icons" style="font-size: 18px;">logout</span>
+        Logout
+    </button>
+
+    <div class="login-container" id="loginContainer">
+        <div class="login-header">
+            <div class="login-logo">✦ ACCESS TERMINAL</div>
+            <div class="login-tagline">Student Portal Login</div>
+        </div>
+
+        <div class="login-card">
+            <div class="error-message" id="errorMessage">Invalid credentials</div>
+
+            <form id="loginForm">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-input" id="username" placeholder="Enter username" required
+                        autocomplete="username">
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Password</label>
+                    <input type="password" class="form-input" id="password" placeholder="Enter password" required
+                        autocomplete="current-password">
+                </div>
+
+                <button type="submit" class="login-btn" id="loginBtn">
+                    <span class="material-icons"
+                        style="vertical-align: middle; margin-right: 8px; font-size: 20px;">login</span>
+                    Access System
+                </button>
+            </form>
+
+            <div class="credentials-info">
+                <h4>Default Credentials:</h4>
+                <p>Username: <code>admin</code> | Password: <code>admin123</code></p>
+                <p>Username: <code>user</code> | Password: <code>password</code></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-container" id="mainContainer">
         <div class="header">
             <div class="logo">✦ STUDENT PORTAL</div>
             <div class="tagline">Discover, Search, Connect</div>
@@ -568,6 +797,98 @@
     </div>
 
     <script>
+        // Authentication Elements
+        const loginContainer = document.getElementById('loginContainer');
+        const mainContainer = document.getElementById('mainContainer');
+        const loginForm = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        // Check authentication on page load
+        function checkAuth() {
+            const isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
+
+            if (isAuthenticated) {
+                showMainContent();
+            } else {
+                showLogin();
+            }
+        }
+
+        // Show login form
+        function showLogin() {
+            loginContainer.classList.add('active');
+            mainContainer.classList.remove('active');
+            logoutBtn.classList.remove('show');
+            document.getElementById('username').focus();
+        }
+
+        // Show main content
+        function showMainContent() {
+            loginContainer.classList.remove('active');
+            mainContainer.classList.add('active');
+            logoutBtn.classList.add('show');
+        }
+
+        // Handle login
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = 'Authenticating...';
+            errorMessage.classList.remove('show');
+
+            try {
+                // Fetch users from users.json
+                const response = await fetch('users.json');
+                const data = await response.json();
+
+                // Check credentials
+                const user = data.users.find(u => u.username === username && u.password === password);
+
+                if (user) {
+                    // Success
+                    sessionStorage.setItem('isAuthenticated', 'true');
+                    sessionStorage.setItem('username', username);
+
+                    // Clear form
+                    loginForm.reset();
+
+                    // Show main content
+                    showMainContent();
+                } else {
+                    // Failed
+                    errorMessage.textContent = 'Invalid username or password';
+                    errorMessage.classList.add('show');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                errorMessage.textContent = 'Error loading credentials. Please try again.';
+                errorMessage.classList.add('show');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<span class="material-icons" style="vertical-align: middle; margin-right: 8px; font-size: 20px;">login</span>Access System';
+            }
+        });
+
+        // Handle logout
+        logoutBtn.addEventListener('click', () => {
+            sessionStorage.removeItem('isAuthenticated');
+            sessionStorage.removeItem('username');
+            showLogin();
+            // Clear results
+            document.body.classList.remove('has-results');
+            document.getElementById('resultsGrid').innerHTML = '';
+            document.getElementById('searchInput').value = '';
+        });
+
+        // Initialize auth check
+        checkAuth();
+
         // State
         let allStudents = [];
         let csvHeaders = [];
