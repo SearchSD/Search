@@ -375,6 +375,58 @@
             word-break: break-word;
         }
 
+        /* Clickable contact info */
+        .copyable {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 4px 8px;
+            margin: -4px -8px;
+            border-radius: 8px;
+        }
+
+        .copyable:hover {
+            background: rgba(0, 255, 65, 0.15);
+            color: var(--accent);
+            transform: scale(1.05);
+        }
+
+        .copyable:active {
+            transform: scale(0.98);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            color: var(--accent);
+            padding: 16px 24px;
+            border-radius: 12px;
+            border: 2px solid var(--accent);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 10000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast .material-icons {
+            font-size: 20px;
+        }
+
         /* No Data */
         .no-data {
             text-align: center;
@@ -465,7 +517,33 @@
         </div>
     </div>
 
+    <div class="toast" id="toast">
+        <span class="material-icons">check_circle</span>
+        <span id="toastMessage">Copied to clipboard!</span>
+    </div>
+
     <script>
+        // Toast notification function
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // Copy to clipboard function
+        function copyToClipboard(text, label) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast(`${label} copied!`);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                showToast('Failed to copy');
+            });
+        }
+
         const studentData = localStorage.getItem('currentStudent');
         const headersData = localStorage.getItem('csvHeaders');
 
@@ -563,7 +641,24 @@
 
                     const value = document.createElement('div');
                     value.className = 'detail-value';
-                    value.textContent = student[field];
+
+                    // Check if this is a phone or email field to make it copyable
+                    const isPhone = field.toLowerCase().includes('mobile') || field.toLowerCase().includes('phone');
+                    const isEmail = field.toLowerCase().includes('email');
+
+                    if (isPhone || isEmail) {
+                        const copyableSpan = document.createElement('span');
+                        copyableSpan.className = 'copyable';
+                        copyableSpan.textContent = student[field];
+                        copyableSpan.title = 'Click to copy';
+                        copyableSpan.onclick = () => {
+                            const labelText = isPhone ? 'Phone number' : 'Email';
+                            copyToClipboard(student[field], labelText);
+                        };
+                        value.appendChild(copyableSpan);
+                    } else {
+                        value.textContent = student[field];
+                    }
 
                     item.appendChild(label);
                     item.appendChild(value);
