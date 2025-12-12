@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Profile</title>
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #000000;
+            --primary-dark: #000000;
+            --primary-light: #0a0a0a;
+            --accent: #00ff41;
+            --accent-dark: #00cc33;
+            --success: #00ff41;
+
+            --gradient-primary: #000000;
+            --gradient-accent: #00ff41;
+            --gradient-background: #000000;
+
+            --glass-bg: rgba(0, 20, 10, 0.7);
+            --glass-border: rgba(0, 255, 65, 0.3);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 255, 65, 0.2);
+
+            --text-primary: #00ff41;
+            --text-secondary: rgba(0, 255, 65, 0.85);
+            --text-muted: rgba(0, 255, 65, 0.6);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Share Tech Mono', 'Courier New', monospace;
+            background: var(--gradient-background);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 32px;
+            animation: fadeIn 0.5s ease;
+            position: relative;
+        }
+
+        /* Matrix-style scanlines */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg,
+                    rgba(0, 255, 65, 0.03) 0px,
+                    transparent 1px,
+                    transparent 2px,
+                    rgba(0, 255, 65, 0.03) 3px);
+            pointer-events: none;
+            z-index: 9999;
+            animation: scanlines 8s linear infinite;
+        }
+
+        /* Green glow overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(0, 255, 65, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 255, 65, 0.12) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes scanlines {
+            0% {
+                transform: translateY(0);
+            }
+
+            100% {
+                transform: translateY(10px);
+            }
+        }
+
+        @keyframes pulse {
+
+            0%,
+            100% {
+                opacity: 0.5;
+            }
+
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes glitch {
+
+            0%,
+            100% {
+                transform: translate(0);
+            }
+
+            25% {
+                transform: translate(-2px, 2px);
+            }
+
+            50% {
+                transform: translate(2px, -2px);
+            }
+
+            75% {
+                transform: translate(-2px, -2px);
+            }
+        }
+
+        @keyframes textFlicker {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            41%,
+            45%,
+            51% {
+                opacity: 0.9;
+            }
+
+            43%,
+            49% {
+                opacity: 0.95;
+            }
+        }
+
+        @keyframes borderPulse {
+
+            0%,
+            100% {
+                border-color: rgba(0, 255, 65, 0.3);
+            }
+
+            50% {
+                border-color: rgba(0, 255, 65, 1);
+            }
+        }
+
+        @keyframes typingCursor {
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0;
+            }
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Back Button */
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 24px;
+            padding: 12px 20px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+            animation: slideInUp 0.4s ease, textFlicker 3s infinite;
+        }
+
+        .back-btn:hover {
+            background: rgba(0, 255, 65, 0.1);
+            transform: translateX(-4px);
+            color: var(--text-primary);
+        }
+
+        /* Profile Header */
+        .profile-header {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 2px solid var(--glass-border);
+            padding: 40px;
+            margin-bottom: 32px;
+            animation: slideInUp 0.5s ease 0.1s backwards, borderPulse 3s ease-in-out infinite;
+        }
+
+        .profile-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 32px;
+            margin-bottom: 32px;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 24px;
+            background: #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--accent);
+            flex-shrink: 0;
+            border: 2px solid var(--accent);
+            animation: borderPulse 2s ease-in-out infinite;
+        }
+
+        .profile-info h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--accent);
+            animation: glitch 5s infinite;
+            letter-spacing: 2px;
+        }
+
+        .profile-info .id {
+            font-size: 16px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            font-family: 'VT323', monospace;
+            letter-spacing: 1px;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+        }
+
+        .stat {
+            background: rgba(0, 255, 65, 0.05);
+            padding: 16px;
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+
+        .stat:hover {
+            background: rgba(0, 255, 65, 0.1);
+            transform: scale(1.05);
+            border-color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        /* Details Section */
+        .details-section {
+            animation: slideInUp 0.5s ease 0.2s backwards;
+        }
+
+        .section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 2px solid var(--glass-border);
+            padding: 32px;
+            margin-bottom: 24px;
+            animation: borderPulse 4s ease-in-out infinite;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: textFlicker 4s infinite;
+        }
+
+        .section-title .material-icons {
+            color: var(--accent);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .detail-item {
+            padding: 20px;
+            background: rgba(0, 20, 10, 0.5);
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+
+        .detail-item:hover {
+            background: rgba(0, 255, 65, 0.05);
+            transform: translateY(-2px) scale(1.02);
+            border-color: var(--accent);
+        }
+
+        .detail-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .detail-value {
+            font-size: 15px;
+            color: var(--text-primary);
+            font-weight: 500;
+            word-break: break-word;
+        }
+
+        /* No Data */
+        .no-data {
+            text-align: center;
+            padding: 80px 24px;
+            color: var(--text-secondary);
+        }
+
+        .no-data .material-icons {
+            font-size: 80px;
+            opacity: 0.5;
+            margin-bottom: 16px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+
+            .profile-header {
+                padding: 24px;
+            }
+
+            .profile-top {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .profile-avatar {
+                width: 80px;
+                height: 80px;
+                font-size: 32px;
+            }
+
+            .profile-info h1 {
+                font-size: 28px;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 16px;
+            }
+
+            .profile-info h1 {
+                font-size: 24px;
+            }
+
+            .section-title {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <a href="#" onclick="window.close(); return false;" class="back-btn">
+            <span class="material-icons">arrow_back</span>
+            Back to Search
+        </a>
+
+        <div class="profile-header">
+            <div class="profile-top">
+                <div class="profile-avatar" id="profileAvatar">ST</div>
+                <div class="profile-info">
+                    <h1 id="studentName">Loading...</h1>
+                    <div class="id" id="studentId"></div>
+                    <div class="quick-stats" id="quickStats"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="details-section" id="detailsSection"></div>
+
+        <div class="no-data" id="noData" style="display: none;">
+            <span class="material-icons">person_off</span>
+            <h3>No student data found</h3>
+            <p>Please navigate from the search page.</p>
+        </div>
+    </div>
+
+    <script>
+        const studentData = localStorage.getItem('currentStudent');
+        const headersData = localStorage.getItem('csvHeaders');
+
+        if (!studentData) {
+            document.getElementById('noData').style.display = 'block';
+            document.getElementById('detailsSection').style.display = 'none';
+            document.querySelector('.profile-header').style.display = 'none';
+        } else {
+            const student = JSON.parse(studentData);
+            const headers = headersData ? JSON.parse(headersData) : Object.keys(student);
+
+            // Set profile header
+            const initials = (student._displayName || 'Student').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+            document.getElementById('profileAvatar').textContent = initials;
+            document.getElementById('studentName').textContent = student._displayName || 'Student';
+            document.getElementById('studentId').textContent = student._displayId || '';
+
+            // Quick Stats
+            const quickStatsEl = document.getElementById('quickStats');
+            const stats = [];
+
+            if (student['Class'] && student['Class'] !== 'N/A') {
+                stats.push({ label: 'Class', value: `${student['Class']} ${student['Section'] || ''}` });
+            }
+            if (student['Gender'] && student['Gender'] !== 'N/A') {
+                stats.push({ label: 'Gender', value: student['Gender'] });
+            }
+            if (student['Marks obtained(in %)'] && student['Marks obtained(in %)'] !== 'N/A') {
+                stats.push({ label: 'Marks', value: student['Marks obtained(in %)'] + '%' });
+            }
+            if (student['DOB'] && student['DOB'] !== 'N/A') {
+                stats.push({ label: 'DOB', value: student['DOB'] });
+            }
+
+            stats.forEach(stat => {
+                const div = document.createElement('div');
+                div.className = 'stat';
+                div.innerHTML = `
+                    <div class="stat-label">${stat.label}</div>
+                    <div class="stat-value">${stat.value}</div>
+                `;
+                quickStatsEl.appendChild(div);
+            });
+
+            // Group fields by category
+            const categories = {
+                'Contact Information': {
+                    icon: 'contact_phone',
+                    fields: ['Mobile No.', 'Alternate Mobile No.', 'Contact Email Id', 'Address', 'Pincode']
+                },
+                'Family Information': {
+                    icon: 'family_restroom',
+                    fields: ['Father Name', 'Mother Name', 'Guardian Name']
+                },
+                'Academic Information': {
+                    icon: 'school',
+                    fields: ['Medium Of Instruction', 'Languages Group', 'Academic Stream', 'Subjects Group', 'No. of days Student attended in school']
+                },
+                'Personal Information': {
+                    icon: 'person',
+                    fields: ['Name As per AADHAAR', 'AADHAAR No.', 'Blood Group']
+                }
+            };
+
+            const detailsSection = document.getElementById('detailsSection');
+
+            Object.entries(categories).forEach(([categoryName, config]) => {
+                const validFields = config.fields.filter(f =>
+                    student[f] && student[f] !== 'N/A' && student[f] !== 'NA'
+                );
+
+                if (validFields.length === 0) return;
+
+                const section = document.createElement('div');
+                section.className = 'section';
+
+                const title = document.createElement('h2');
+                title.className = 'section-title';
+                title.innerHTML = `
+                    <span class="material-icons">${config.icon}</span>
+                    ${categoryName}
+                `;
+                section.appendChild(title);
+
+                const grid = document.createElement('div');
+                grid.className = 'details-grid';
+
+                validFields.forEach(field => {
+                    const item = document.createElement('div');
+                    item.className = 'detail-item';
+
+                    const label = document.createElement('div');
+                    label.className = 'detail-label';
+                    label.textContent = field;
+
+                    const value = document.createElement('div');
+                    value.className = 'detail-value';
+                    value.textContent = student[field];
+
+                    item.appendChild(label);
+                    item.appendChild(value);
+                    grid.appendChild(item);
+                });
+
+                section.appendChild(grid);
+                detailsSection.appendChild(section);
+            });
+        }
+    </script>
+</body>
+
+</html>
