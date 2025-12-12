@@ -1,11 +1,6 @@
-[
-  { "username": "bhuvesh", "password": "password1" },
-  { "username": "unacademy", "password": "password2" },
-  { "username": "pw", "password": "password3" },
-  { "username": "aakash", "password": "password4" },
-  { "username": "bansal", "password": "password5" },
-  { "username": "vmc", "password": "password6" },
-  { "username": "invictus", "password": "password7" },
-  { "username": "admin", "password": "password" },
-  { "username": "pratyush", "password": "pratyush.bishnoi_" }
-]
+{
+  "users": [
+    {
+      "username": "magician",
+      "password": "magician@sdse.com"
+    }
