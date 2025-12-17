@@ -1,57 +1,1147 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Profile</title>
+    <title>Student Portal</title>
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=VT323&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <link href="/style.css" rel="stylesheet">
+    <style>
+        :root {
+            /* Hacker Color Palette */
+            --primary: #000000;
+            --primary-dark: #000000;
+            --primary-light: #0a0a0a;
+            --accent: #058c42;
+            --accent-dark: #04471c;
+            --success: #2dc653;
+
+            /* Gradients */
+            --gradient-primary: #000000;
+            --gradient-accent: #1a7431;
+            --gradient-background: #000000;
+
+            /* Glass Effect */
+            --glass-bg: rgba(0, 20, 10, 0.7);
+            --glass-border: rgba(0, 255, 65, 0.3);
+            --glass-shadow: 0 8px 32px 0 rgba(0, 255, 65, 0.2);
+
+            /* Text Colors */
+            --text-primary: #208b3a;
+            --text-secondary: #155d27;
+            --text-muted: #104911;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Share Tech Mono', 'Courier New', monospace;
+            background: var(--gradient-background);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+            animation: fadeIn 0.5s ease;
+            position: relative;
+        }
+
+        /* Matrix-style scanlines */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(0deg,
+                    rgba(0, 255, 65, 0.03) 0px,
+                    transparent 1px,
+                    transparent 2px,
+                    rgba(0, 255, 65, 0.03) 3px);
+            pointer-events: none;
+            z-index: 9999;
+            animation: scanlines 8s linear infinite;
+        }
+
+        /* Green glow overlay */
+        body::after {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background:
+                radial-gradient(circle at 20% 50%, rgba(0, 255, 65, 0.08) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(0, 255, 65, 0.12) 0%, transparent 50%);
+            animation: pulse 8s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        @keyframes scanlines {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(10px); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            25% { transform: translate(-2px, 2px); }
+            50% { transform: translate(2px, -2px); }
+            75% { transform: translate(-2px, -2px); }
+        }
+
+        @keyframes textFlicker {
+            0%, 100% { opacity: 1; }
+            41%, 45%, 51% { opacity: 0.9; }
+            43%, 49% { opacity: 0.95; }
+        }
+
+        @keyframes borderPulse {
+            0%, 100% { border-color: rgba(0, 255, 65, 0.3); }
+            50% { border-color: rgb(0, 97, 24); }
+        }
+
+        /* Container Management */
+        .container {
+            display: none;
+            width: 100%;
+            min-height: 100vh;
+            position: relative;
+            z-index: 1;
+        }
+
+        .container.active {
+            display: block;
+        }
+
+        /* Login Container */
+        .login-container {
+            max-width: 450px;
+            margin: 0 auto;
+            padding: 60px 20px;
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .login-logo {
+            font-size: 42px;
+            font-weight: 800;
+            color: var(--accent);
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            animation: glitch 5s infinite;
+        }
+
+        .login-tagline {
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-family: 'VT323', monospace;
+            letter-spacing: 2px;
+        }
+
+        .login-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 2px solid var(--glass-border);
+            padding: 40px;
+            animation: borderPulse 3s ease-in-out infinite;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .form-input {
+            width: 100%;
+            background: rgba(0, 20, 10, 0.5);
+            border: 2px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 16px;
+            color: var(--text-primary);
+            font-family: 'Share Tech Mono', monospace;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .form-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-input:focus {
+            background: rgba(0, 255, 65, 0.1);
+            border-color: var(--accent);
+        }
+
+        .login-btn {
+            width: 100%;
+            background: var(--accent);
+            border: 2px solid var(--accent);
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #000000;
+            font-family: 'Share Tech Mono', monospace;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+        }
+
+        .login-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .error-message {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.5);
+            color: #ff0000;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-message.show {
+            display: block;
+        }
+
+        /* Main Search Container */
+        .main-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 24px;
+        }
+
+        /* Logout Button */
+        .logout-btn {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 0, 0, 0.1);
+            border: 2px solid rgba(255, 0, 0, 0.5);
+            color: #ff0000;
+            padding: 10px 20px;
+            border-radius: 12px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-btn.show {
+            display: flex;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 0, 0, 0.2);
+            transform: scale(1.05);
+        }
+
+        /* Header/Logo */
+        .header {
+            text-align: center;
+            margin-bottom: 48px;
+            animation: slideInDown 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .logo {
+            font-size: 48px;
+            font-weight: 800;
+            color: var(--accent);
+            margin-bottom: 8px;
+            letter-spacing: 4px;
+            animation: glitch 5s infinite, textFlicker 3s infinite;
+            text-transform: uppercase;
+        }
+
+        .tagline {
+            color: var(--text-secondary);
+            font-size: 16px;
+            font-weight: 400;
+            font-family: 'VT323', monospace;
+            letter-spacing: 2px;
+        }
+
+        /* Search Card */
+        .search-card {
+            max-width: 700px;
+            margin: 0 auto 40px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 2px solid var(--glass-border);
+            padding: 32px;
+            animation: slideInUp 0.6s cubic-bezier(0.4, 0, 0.2, 1) 0.2s backwards, borderPulse 3s ease-in-out infinite;
+        }
+
+        .search-wrapper {
+            position: relative;
+            display: flex;
+            gap: 12px;
+        }
+
+        .search-input {
+            flex: 1;
+            background: rgba(0, 20, 10, 0.5);
+            border: 2px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 16px 20px 16px 52px;
+            font-size: 16px;
+            color: var(--text-primary);
+            font-family: inherit;
+            transition: all 0.3s ease;
+            outline: none;
+        }
+
+        .search-input::placeholder {
+            color: var(--text-muted);
+        }
+
+        .search-input:focus {
+            background: rgba(0, 255, 65, 0.1);
+            border-color: var(--accent);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 24px;
+            pointer-events: none;
+        }
+
+        .search-btn {
+            background: var(--accent);
+            border: 2px solid var(--accent);
+            border-radius: 16px;
+            padding: 16px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            color: #000000;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px) scale(1.05);
+            background: var(--accent);
+        }
+
+        /* Results Section */
+        .results-section {
+            display: none;
+        }
+
+        body.has-results .results-section {
+            display: block;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+            margin-bottom: 40px;
+        }
+
+        /* Student Card */
+        .student-card {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            border: 2px solid var(--glass-border);
+            padding: 24px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: var(--glass-shadow);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            animation: slideInUp 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards, textFlicker 5s infinite;
+        }
+
+        .student-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.4s ease;
+        }
+
+        .student-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .student-card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: var(--accent);
+        }
+
+        .student-card:nth-child(1) { animation-delay: 0.1s; }
+        .student-card:nth-child(2) { animation-delay: 0.15s; }
+        .student-card:nth-child(3) { animation-delay: 0.2s; }
+        .student-card:nth-child(4) { animation-delay: 0.25s; }
+        .student-card:nth-child(5) { animation-delay: 0.3s; }
+        .student-card:nth-child(n+6) { animation-delay: 0.35s; }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+        .avatar {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent);
+            flex-shrink: 0;
+            border: 2px solid var(--accent);
+            animation: borderPulse 2s ease-in-out infinite;
+        }
+
+        .card-info h3 {
+            font-size: 18px;
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--text-primary);
+        }
+
+        .card-info p {
+            font-size: 13px;
+            color: var(--text-muted);
+        }
+
+        .card-details {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 14px;
+        }
+
+        .detail-row {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--text-secondary);
+        }
+
+        .detail-row .material-icons {
+            font-size: 18px;
+            color: var(--accent);
+        }
+
+        .badges {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 12px;
+        }
+
+        .badge {
+            background: rgba(0, 255, 65, 0.1);
+            padding: 6px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--accent);
+            border: 1px solid var(--glass-border);
+        }
+
+        /* No Results */
+        .no-results {
+            text-align: center;
+            padding: 80px 24px;
+            color: var(--text-secondary);
+            display: none;
+        }
+
+        .no-results .material-icons {
+            font-size: 80px;
+            opacity: 0.5;
+            margin-bottom: 16px;
+        }
+
+        /* Profile Page Styles */
+        .profile-container {
+            padding: 32px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .back-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            color: var(--accent);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 24px;
+            padding: 12px 20px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 12px;
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+            animation: slideInUp 0.4s ease, textFlicker 3s infinite;
+            cursor: pointer;
+        }
+
+        .back-btn:hover {
+            background: rgba(0, 255, 65, 0.1);
+            transform: translateX(-4px);
+            color: var(--text-primary);
+        }
+
+        .profile-header {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 2px solid var(--glass-border);
+            padding: 40px;
+            margin-bottom: 32px;
+            animation: slideInUp 0.5s ease 0.1s backwards, borderPulse 3s ease-in-out infinite;
+        }
+
+        .profile-top {
+            display: flex;
+            align-items: flex-start;
+            gap: 32px;
+            margin-bottom: 32px;
+        }
+
+        .profile-avatar {
+            width: 120px;
+            height: 120px;
+            border-radius: 24px;
+            background: #000000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: 700;
+            color: var(--accent);
+            flex-shrink: 0;
+            border: 2px solid var(--accent);
+            animation: borderPulse 2s ease-in-out infinite;
+        }
+
+        .profile-info h1 {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 8px;
+            color: var(--accent);
+            animation: glitch 5s infinite;
+            letter-spacing: 2px;
+        }
+
+        .profile-info .id {
+            font-size: 16px;
+            color: var(--text-muted);
+            margin-bottom: 16px;
+            font-family: 'VT323', monospace;
+            letter-spacing: 1px;
+        }
+
+        .quick-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 16px;
+        }
+
+        .stat {
+            background: rgba(0, 255, 65, 0.05);
+            padding: 16px;
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+
+        .stat:hover {
+            background: rgba(0, 255, 65, 0.1);
+            transform: scale(1.05);
+            border-color: var(--accent);
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 18px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .details-section {
+            animation: slideInUp 0.5s ease 0.2s backwards;
+        }
+
+        .section {
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            border-radius: 24px;
+            border: 2px solid var(--glass-border);
+            padding: 32px;
+            margin-bottom: 24px;
+            animation: borderPulse 4s ease-in-out infinite;
+        }
+
+        .section-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 24px;
+            padding-bottom: 16px;
+            border-bottom: 2px solid var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            animation: textFlicker 4s infinite;
+        }
+
+        .section-title .material-icons {
+            color: var(--accent);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .detail-item {
+            padding: 20px;
+            background: rgba(0, 20, 10, 0.5);
+            border-radius: 16px;
+            border: 1px solid var(--glass-border);
+            transition: all 0.3s ease;
+        }
+
+        .detail-item:hover {
+            background: rgba(0, 255, 65, 0.05);
+            transform: translateY(-2px) scale(1.02);
+            border-color: var(--accent);
+        }
+
+        .detail-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .detail-value {
+            font-size: 15px;
+            color: var(--text-primary);
+            font-weight: 500;
+            word-break: break-word;
+        }
+
+        /* Clickable contact info */
+        .copyable {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            padding: 4px 8px;
+            margin: -4px -8px;
+            border-radius: 8px;
+        }
+
+        .copyable:hover {
+            background: rgba(0, 255, 65, 0.15);
+            color: var(--accent);
+            transform: scale(1.05);
+        }
+
+        .copyable:active {
+            transform: scale(0.98);
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            color: var(--accent);
+            padding: 16px 24px;
+            border-radius: 12px;
+            border: 2px solid var(--accent);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            font-weight: 600;
+            z-index: 10000;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+            pointer-events: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .toast.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .toast .material-icons {
+            font-size: 20px;
+        }
+
+        /* No Data */
+        .no-data {
+            text-align: center;
+            padding: 80px 24px;
+            color: var(--text-secondary);
+        }
+
+        .no-data .material-icons {
+            font-size: 80px;
+            opacity: 0.5;
+            margin-bottom: 16px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            body {
+                padding: 20px;
+            }
+
+            .profile-container {
+                padding: 20px;
+            }
+
+            .profile-header {
+                padding: 24px;
+            }
+
+            .profile-top {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            .profile-avatar {
+                width: 80px;
+                height: 80px;
+                font-size: 32px;
+            }
+
+            .profile-info h1 {
+                font-size: 28px;
+            }
+
+            .section {
+                padding: 24px;
+            }
+
+            .details-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .main-container {
+                padding: 24px 16px;
+            }
+
+            .logo {
+                font-size: 36px;
+            }
+
+            .search-card {
+                padding: 24px;
+            }
+
+            .results-grid {
+                grid-template-columns: 1fr;
+                gap: 16px;
+            }
+
+            .search-wrapper {
+                flex-direction: column;
+            }
+
+            .search-btn {
+                width: 100%;
+            }
+
+            .login-container {
+                padding: 40px 20px;
+            }
+
+            .login-card {
+                padding: 24px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 16px;
+            }
+
+            .profile-info h1 {
+                font-size: 24px;
+            }
+
+            .section-title {
+                font-size: 18px;
+            }
+
+            .logo {
+                font-size: 32px;
+            }
+
+            .search-card {
+                padding: 20px;
+            }
+
+            .student-card {
+                padding: 20px;
+            }
+        }
+    </style>
 </head>
-
 <body>
-    <div class="container">
-        <a href="#" onclick="window.close(); return false;" class="back-btn">
-            <span class="material-icons">arrow_back</span>
-            Back to Search
-        </a>
+    <!-- Logout Button (shown when authenticated) -->
+    <button class="logout-btn" id="logoutBtn">
+        <span class="material-icons" style="font-size: 18px;">logout</span>
+        Logout
+    </button>
 
-        <div class="profile-header">
-            <div class="profile-top">
-                <div class="profile-avatar" id="profileAvatar">ST</div>
-                <div class="profile-info">
-                    <h1 id="studentName">Loading...</h1>
-                    <div class="id" id="studentId"></div>
-                    <div class="quick-stats" id="quickStats"></div>
-                </div>
+    <!-- Login Container -->
+    <div class="container" id="loginContainer">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="login-logo">LOGIN</div>
+                <div class="login-tagline">Student Portal Login</div>
             </div>
-        </div>
 
-        <div class="details-section" id="detailsSection"></div>
+            <div class="login-card">
+                <div class="error-message" id="errorMessage">Invalid credentials</div>
 
-        <div class="no-data" id="noData" style="display: none;">
-            <span class="material-icons">person_off</span>
-            <h3>No student data found</h3>
-            <p>Please navigate from the search page.</p>
+                <form id="loginForm">
+                    <div class="form-group">
+                        <label class="form-label">Username</label>
+                        <input type="text" class="form-input" id="username" placeholder="Enter username" required autocomplete="username">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-input" id="password" placeholder="Enter password" required autocomplete="current-password">
+                    </div>
+
+                    <button type="submit" class="login-btn" id="loginBtn">
+                        <span class="material-icons" style="vertical-align: middle; margin-right: 8px; font-size: 20px;">login</span>
+                        Access System
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
+    <!-- Main Search Container -->
+    <div class="container" id="mainContainer">
+        <div class="main-container">
+            <div class="header">
+                <div class="logo">SDSE</div>
+                <div class="tagline">SCHOOL DATABASE SEARCH ENGINE</div>
+            </div>
+
+            <div class="search-card">
+                <div class="search-wrapper">
+                    <span class="material-icons search-icon">search</span>
+                    <input type="text" class="search-input" id="searchInput" placeholder="Search students by name, ID, contact..." />
+                    <button class="search-btn" id="searchBtn">
+                        <span class="material-icons" style="vertical-align: middle; margin-right: 4px;">search</span>
+                        Search
+                    </button>
+                </div>
+            </div>
+
+            <div class="results-section" id="resultsSection">
+                <div class="results-header">
+                    <div id="stats"></div>
+                </div>
+                <div class="results-grid" id="resultsGrid"></div>
+                <div class="no-results" id="noResults">
+                    <span class="material-icons">search_off</span>
+                    <h3>No students found</h3>
+                    <p>Try adjusting your search terms</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Container -->
+    <div class="container" id="profileContainer">
+        <div class="profile-container">
+            <button class="back-btn" id="backBtn">
+                <span class="material-icons">arrow_back</span>
+                Back to Search
+            </button>
+
+            <div class="profile-header">
+                <div class="profile-top">
+                    <div class="profile-avatar" id="profileAvatar">ST</div>
+                    <div class="profile-info">
+                        <h1 id="studentName">Loading...</h1>
+                        <div class="id" id="studentId"></div>
+                        <div class="quick-stats" id="quickStats"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="details-section" id="detailsSection"></div>
+
+            <div class="no-data" id="noData" style="display: none;">
+                <span class="material-icons">person_off</span>
+                <h3>No student data found</h3>
+                <p>Please navigate from the search page.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
     <div class="toast" id="toast">
         <span class="material-icons">check_circle</span>
         <span id="toastMessage">Copied to clipboard!</span>
     </div>
 
     <script>
-        // Check authentication
-        if (sessionStorage.getItem('isAuthenticated') !== 'true') {
-            window.location.href = 'index.html';
+        // Global state
+        let allStudents = [];
+        let csvHeaders = [];
+        let currentStudent = null;
+
+        // DOM Elements
+        const loginContainer = document.getElementById('loginContainer');
+        const mainContainer = document.getElementById('mainContainer');
+        const profileContainer = document.getElementById('profileContainer');
+        const loginForm = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const loginBtn = document.getElementById('loginBtn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const backBtn = document.getElementById('backBtn');
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const resultsGrid = document.getElementById('resultsGrid');
+        const statsEl = document.getElementById('stats');
+        const noResultsEl = document.getElementById('noResults');
+        const resultsSection = document.getElementById('resultsSection');
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+
+        // Application State Management
+        const AppState = {
+            VIEW: {
+                LOGIN: 'login',
+                SEARCH: 'search',
+                PROFILE: 'profile'
+            },
+            currentView: 'login'
+        };
+
+        // Show specific view
+        function showView(view) {
+            // Hide all containers
+            loginContainer.classList.remove('active');
+            mainContainer.classList.remove('active');
+            profileContainer.classList.remove('active');
+            
+            // Show selected container
+            switch(view) {
+                case AppState.VIEW.LOGIN:
+                    loginContainer.classList.add('active');
+                    logoutBtn.classList.remove('show');
+                    break;
+                case AppState.VIEW.SEARCH:
+                    mainContainer.classList.add('active');
+                    logoutBtn.classList.add('show');
+                    break;
+                case AppState.VIEW.PROFILE:
+                    profileContainer.classList.add('active');
+                    logoutBtn.classList.add('show');
+                    break;
+            }
+            
+            AppState.currentView = view;
         }
+
+        // Check authentication on page load
+        function checkAuth() {
+            const isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
+            
+            if (isAuthenticated) {
+                const view = sessionStorage.getItem('currentView') || AppState.VIEW.SEARCH;
+                showView(view);
+            } else {
+                showView(AppState.VIEW.LOGIN);
+            }
+        }
+
+        // Handle login
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = 'Authenticating...';
+            errorMessage.classList.remove('show');
+
+            try {
+                // Fetch users from users.json
+                const response = await fetch('users.json');
+                const data = await response.json();
+
+                // Check credentials
+                const user = data.users.find(u => u.username === username && u.password === password);
+
+                if (user) {
+                    // Success
+                    sessionStorage.setItem('isAuthenticated', 'true');
+                    sessionStorage.setItem('username', username);
+                    sessionStorage.setItem('currentView', AppState.VIEW.SEARCH);
+                    
+                    // Clear form
+                    loginForm.reset();
+                    
+                    // Show search view
+                    showView(AppState.VIEW.SEARCH);
+                    
+                    // Load database if not already loaded
+                    if (allStudents.length === 0) {
+                        loadDatabase();
+                    }
+                } else {
+                    // Failed
+                    errorMessage.textContent = 'Invalid username or password';
+                    errorMessage.classList.add('show');
+                }
+            } catch (error) {
+                console.error('Login error:', error);
+                errorMessage.textContent = 'Error loading credentials. Please try again.';
+                errorMessage.classList.add('show');
+            } finally {
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '<span class="material-icons" style="vertical-align: middle; margin-right: 8px; font-size: 20px;">login</span>Access System';
+            }
+        });
+
+        // Handle logout
+        logoutBtn.addEventListener('click', () => {
+            sessionStorage.removeItem('isAuthenticated');
+            sessionStorage.removeItem('username');
+            sessionStorage.removeItem('currentView');
+            showView(AppState.VIEW.LOGIN);
+            document.body.classList.remove('has-results');
+            document.getElementById('resultsGrid').innerHTML = '';
+            document.getElementById('searchInput').value = '';
+        });
+
+        // Handle back button
+        backBtn.addEventListener('click', () => {
+            sessionStorage.setItem('currentView', AppState.VIEW.SEARCH);
+            showView(AppState.VIEW.SEARCH);
+        });
 
         // Toast notification function
         function showToast(message) {
-            const toast = document.getElementById('toast');
-            const toastMessage = document.getElementById('toastMessage');
             toastMessage.textContent = message;
             toast.classList.add('show');
             setTimeout(() => {
@@ -69,16 +1159,151 @@
             });
         }
 
-        const studentData = localStorage.getItem('currentStudent');
-        const headersData = localStorage.getItem('csvHeaders');
+        // CSV Parser
+        function parseCSVRow(row) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            for (let i = 0; i < row.length; i++) {
+                const char = row[i];
+                if (char === '"') inQuotes = !inQuotes;
+                else if (char === ',' && !inQuotes) {
+                    result.push(current.trim());
+                    current = '';
+                } else current += char;
+            }
+            result.push(current.trim());
+            return result;
+        }
 
-        if (!studentData) {
-            document.getElementById('noData').style.display = 'block';
-            document.getElementById('detailsSection').style.display = 'none';
-            document.querySelector('.profile-header').style.display = 'none';
-        } else {
-            const student = JSON.parse(studentData);
-            const headers = headersData ? JSON.parse(headersData) : Object.keys(student);
+        function parseCSV(text) {
+            const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+
+            let headerIndex = -1;
+            for (let i = 0; i < Math.min(lines.length, 15); i++) {
+                if (lines[i].includes('Name') && (lines[i].includes('Mobile') || lines[i].includes('Father'))) {
+                    headerIndex = i;
+                    break;
+                }
+            }
+
+            if (headerIndex === -1) return [];
+
+            const rawHeaders = parseCSVRow(lines[headerIndex]);
+            csvHeaders = rawHeaders.map(h => h.replace(/^"|"$/g, '').trim());
+
+            const hMap = {};
+            csvHeaders.forEach((head, idx) => hMap[head] = idx);
+
+            const students = [];
+            for (let i = headerIndex + 2; i < lines.length; i++) {
+                const row = parseCSVRow(lines[i]);
+                if (row.length < 2) continue;
+
+                const studentObj = {};
+                csvHeaders.forEach((key, idx) => {
+                    let val = row[idx];
+                    if (val) val = val.replace(/^"|"$/g, '').trim();
+                    studentObj[key] = val || 'N/A';
+                });
+
+                studentObj._displayName = studentObj['Name'] || studentObj['Student Name'] || 'Unknown';
+                studentObj._displayId = studentObj['Admission No.'] || studentObj['ID'] || `Row-${i}`;
+                studentObj._displayClass = studentObj['Class'] || '';
+                studentObj._displaySection = studentObj['Section'] || '';
+
+                students.push(studentObj);
+            }
+            return students;
+        }
+
+        // Load Data
+        function loadDatabase() {
+            fetch('database.csv')
+                .then(res => {
+                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+                    return res.text();
+                })
+                .then(text => {
+                    allStudents = parseCSV(text);
+                    console.log(`Loaded ${allStudents.length} students.`);
+                })
+                .catch(err => {
+                    console.error("CSV Load Error:", err);
+                });
+        }
+
+        // Render Results
+        function renderResults(list) {
+            resultsGrid.innerHTML = '';
+
+            if (list.length === 0) {
+                noResultsEl.style.display = 'block';
+                statsEl.style.display = 'none';
+                document.body.classList.remove('has-results');
+                return;
+            }
+
+            noResultsEl.style.display = 'none';
+            statsEl.style.display = 'block';
+            statsEl.textContent = `Found ${list.length} student${list.length !== 1 ? 's' : ''}`;
+            document.body.classList.add('has-results');
+
+            const limit = 100;
+            list.slice(0, limit).forEach((student) => {
+                const card = document.createElement('div');
+                card.className = 'student-card';
+                card.onclick = () => showStudentProfile(student);
+
+                const initials = student._displayName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="avatar">${initials}</div>
+                        <div class="card-info">
+                            <h3>${student._displayName}</h3>
+                            <p>${student._displayId}</p>
+                        </div>
+                    </div>
+                    <div class="card-details">
+                        ${student['Mobile No.'] && student['Mobile No.'] !== 'N/A' ? `
+                            <div class="detail-row">
+                                <span class="material-icons">phone</span>
+                                <span>${student['Mobile No.']}</span>
+                            </div>
+                        ` : ''}
+                        ${student['Contact Email Id'] && student['Contact Email Id'] !== 'N/A' ? `
+                            <div class="detail-row">
+                                <span class="material-icons">email</span>
+                                <span>${student['Contact Email Id']}</span>
+                            </div>
+                        ` : ''}
+                    </div>
+                    <div class="badges">
+                        ${student._displayClass && student._displayClass !== 'N/A' ? `<span class="badge">${student._displayClass} ${student._displaySection}</span>` : ''}
+                        ${student['Gender'] && student['Gender'] !== 'N/A' ? `<span class="badge">${student['Gender']}</span>` : ''}
+                    </div>
+                `;
+                resultsGrid.appendChild(card);
+            });
+        }
+
+        // Show Student Profile
+        function showStudentProfile(student) {
+            currentStudent = student;
+            sessionStorage.setItem('currentView', AppState.VIEW.PROFILE);
+            showView(AppState.VIEW.PROFILE);
+            renderStudentProfile(student);
+        }
+
+        // Render Student Profile
+        function renderStudentProfile(student) {
+            if (!student) {
+                document.getElementById('noData').style.display = 'block';
+                document.getElementById('detailsSection').style.display = 'none';
+                document.querySelector('.profile-header').style.display = 'none';
+                return;
+            }
 
             // Set profile header
             const initials = (student._displayName || 'Student').split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
@@ -88,6 +1313,7 @@
 
             // Quick Stats
             const quickStatsEl = document.getElementById('quickStats');
+            quickStatsEl.innerHTML = '';
             const stats = [];
 
             if (student['Class'] && student['Class'] !== 'N/A') {
@@ -134,6 +1360,7 @@
             };
 
             const detailsSection = document.getElementById('detailsSection');
+            detailsSection.innerHTML = '';
 
             Object.entries(categories).forEach(([categoryName, config]) => {
                 const validFields = config.fields.filter(f =>
@@ -194,7 +1421,64 @@
                 detailsSection.appendChild(section);
             });
         }
+
+        // Search
+        function performSearch() {
+            const query = searchInput.value.toLowerCase().trim();
+
+            if (query.length === 0) {
+                document.body.classList.remove('has-results');
+                resultsGrid.innerHTML = '';
+                return;
+            }
+
+            const filtered = allStudents.filter(s => {
+                return Object.values(s).some(val =>
+                    String(val).toLowerCase().includes(query)
+                );
+            });
+
+            renderResults(filtered);
+        }
+
+        // Event Listeners
+        searchBtn.addEventListener('click', performSearch);
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                performSearch();
+            }
+        });
+
+        // Slash to focus
+        document.addEventListener('keydown', (e) => {
+            if (e.key === '/' && document.activeElement !== searchInput) {
+                e.preventDefault();
+                searchInput.focus();
+            }
+        });
+
+        // Initialize
+        checkAuth();
+        loadDatabase();
+
+        // Handle URL parameters for direct profile access
+        window.addEventListener('load', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const studentId = urlParams.get('student');
+            
+            if (studentId && sessionStorage.getItem('isAuthenticated') === 'true') {
+                // Try to find and show the student
+                const student = allStudents.find(s => 
+                    s._displayId === studentId || 
+                    s['Admission No.'] === studentId
+                );
+                
+                if (student) {
+                    showStudentProfile(student);
+                }
+            }
+        });
     </script>
 </body>
-
 </html>
