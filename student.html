@@ -1217,20 +1217,66 @@
             return students;
         }
 
-        // Load Data
-        function loadDatabase() {
-            fetch('database.csv')
-                .then(res => {
-                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                    return res.text();
-                })
-                .then(text => {
-                    allStudents = parseCSV(text);
-                    console.log(`Loaded ${allStudents.length} students.`);
-                })
-                .catch(err => {
-                    console.error("CSV Load Error:", err);
+        // Load Data - MULTI-CSV VERSION
+        async function loadDatabase() {
+            try {
+                // Array of CSV files to load
+                const files = ['database.csv', 'database1.csv'];
+                
+                // Load all CSV files in parallel
+                const fetchPromises = files.map(file => 
+                    fetch(file)
+                        .then(res => {
+                            if (!res.ok) throw new Error(`HTTP ${res.status} for ${file}`);
+                            return res.text();
+                        })
+                        .catch(err => {
+                            console.warn(`Warning: Could not load ${file}:`, err);
+                            return ''; // Return empty string if file doesn't exist
+                        })
+                );
+                
+                const texts = await Promise.all(fetchPromises);
+                
+                // Parse each CSV and combine results
+                let mergedStudents = [];
+                texts.forEach((text, index) => {
+                    if (text && text.trim()) {
+                        const students = parseCSV(text);
+                        console.log(`Loaded ${students.length} students from ${files[index]}`);
+                        mergedStudents = mergedStudents.concat(students);
+                    }
                 });
+                
+                // Remove duplicates based on Admission No. or display ID
+                const uniqueMap = new Map();
+                mergedStudents.forEach(student => {
+                    const key = student['Admission No.'] || student._displayId || student['Name'];
+                    if (key && key !== 'N/A') {
+                        // Keep the first occurrence, or implement custom merge logic if needed
+                        if (!uniqueMap.has(key)) {
+                            uniqueMap.set(key, student);
+                        }
+                    }
+                });
+                
+                allStudents = Array.from(uniqueMap.values());
+                
+                console.log(`Total: ${allStudents.length} unique students loaded from ${files.length} files`);
+                
+            } catch (error) {
+                console.error('Failed to load databases:', error);
+                // Fallback to single file if multi-load fails
+                try {
+                    const response = await fetch('database.csv');
+                    const text = await response.text();
+                    allStudents = parseCSV(text);
+                    console.log(`Loaded ${allStudents.length} students (fallback to database.csv only)`);
+                } catch (fallbackError) {
+                    console.error('Fallback also failed:', fallbackError);
+                    allStudents = [];
+                }
+            }
         }
 
         // Render Results
