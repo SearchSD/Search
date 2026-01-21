@@ -241,20 +241,36 @@
         }
 
         // Load Data
-        function loadDatabase() {
-            fetch('database.csv')
-                .then(res => {
-                    if (!res.ok) throw new Error(`HTTP ${res.status}`);
-                    return res.text();
-                })
-                .then(text => {
-                    allStudents = parseCSV(text);
-                    console.log(`Loaded ${allStudents.length} students.`);
-                })
-                .catch(err => {
-                    console.error("CSV Load Error:", err);
-                });
-        }
+async function loadDatabase() {
+    try {
+        const files = ['database.csv', 'database1.csv'];
+
+        const responses = await Promise.all(
+            files.map(f => fetch(f).then(r => r.text()))
+        );
+
+        let merged = [];
+
+        responses.forEach(text => {
+            const parsed = parseCSV(text);
+            merged = merged.concat(parsed);
+        });
+
+        // OPTIONAL: remove duplicates using Admission No.
+        const uniqueMap = new Map();
+        merged.forEach(s => {
+            const key = s['Admission No.'] || s._displayId;
+            uniqueMap.set(key, s);
+        });
+
+        allStudents = Array.from(uniqueMap.values());
+
+        console.log(`Loaded ${allStudents.length} students from multiple databases`);
+    } catch (err) {
+        console.error('Database load failed:', err);
+    }
+}
+
 
         // Render Results
         function renderResults(list) {
